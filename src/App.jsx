@@ -8,9 +8,14 @@ function App() {
   const [isValid, setIsValid] = useState(false);
 
   const [newExpenseModal, setNewExpenseModal] = useState(false);
+  const [animateModal, setAnimateModal] = useState(false);
 
   const handleNewExpense = () => {
     setNewExpenseModal(true);
+
+    setTimeout(() => {
+      setAnimateModal(true);
+    }, 250);
   };
 
   return (
@@ -27,7 +32,7 @@ function App() {
         </div>
       )}
 
-      {newExpenseModal && <NuevoGastoModal setNewExpenseModal={setNewExpenseModal}/>}
+      {newExpenseModal && <NuevoGastoModal setNewExpenseModal={setNewExpenseModal} animateModal={animateModal} setAnimateModal={setAnimateModal} />}
     </>
   );
 }
