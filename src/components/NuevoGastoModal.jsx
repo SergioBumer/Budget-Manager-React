@@ -86,6 +86,7 @@ const NuevoGastoModal = ({
             type="text"
             placeholder="Type the Quantity"
             value={cantidad}
+            step="any" 
             onChange={(e) => setCantidad(Number(e.target.value))}
           />
         </div>
