@@ -1,18 +1,34 @@
 import IconoCerrar from "../img/cerrar.svg";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Mensaje from "./Mensaje";
 const NuevoGastoModal = ({
   setNewExpenseModal,
   animateModal,
   setAnimateModal,
-  guardarGasto
+  guardarGasto,
+  gastoEditar,
+  setGastoEditar,
 }) => {
   const [mensaje, setMensaje] = useState("");
   const [nombre, setNombre] = useState("");
   const [cantidad, setCantidad] = useState(1);
   const [categoria, setCategoria] = useState("");
+  const [fecha, setFecha] = useState("");
+  const [id, setId] = useState("");
+
+  useEffect(() => {
+    if (Object.keys(gastoEditar).length > 0) {
+      setNombre(gastoEditar.nombre);
+      setCantidad(gastoEditar.cantidad);
+      setCategoria(gastoEditar.categoria);
+      setFecha(gastoEditar.fecha);
+      setId(gastoEditar.id);
+    }
+  }, []);
+
   const ocultarModal = () => {
     setAnimateModal(false);
+    setGastoEditar({});
     setTimeout(() => {
       setNewExpenseModal(false);
     }, 500);
@@ -29,10 +45,12 @@ const NuevoGastoModal = ({
       return;
     }
 
-    guardarGasto({nombre, cantidad, categoria});
-    setNombre('');
+    guardarGasto({ nombre, cantidad, categoria, id, fecha });
+    setNombre("");
     setCantidad(1);
-    setCategoria('');
+    setCategoria("");
+    setId("");
+    ocultarModal();
   };
   return (
     <div className="modal">
@@ -44,7 +62,9 @@ const NuevoGastoModal = ({
         onSubmit={handleSubmit}
         className={`formulario ${animateModal ? "animar" : ""}`}
       >
-        <legend>New Expense</legend>
+        <legend>
+          {Object.keys(gastoEditar).length > 0 ? "Edit" : "New"} Expense
+        </legend>
 
         {mensaje && <Mensaje mensaje={mensaje} tipo={"error"} />}
 
@@ -63,10 +83,10 @@ const NuevoGastoModal = ({
           <label htmlFor="cantidad">Quantity</label>
           <input
             id="cantidad"
-            type="number"
+            type="text"
             placeholder="Type the Quantity"
             value={cantidad}
-            onChange={(e) => setCantidad(e.target.value)}
+            onChange={(e) => setCantidad(Number(e.target.value))}
           />
         </div>
 
@@ -88,7 +108,12 @@ const NuevoGastoModal = ({
             <option value="subs">Subscriptions</option>
           </select>
         </div>
-        <input type="submit" value="Añadir Gasto" />
+        <input
+          type="submit"
+          value={
+            Object.keys(gastoEditar).length > 0 ? "Edit Expense" : "New Expense"
+          }
+        />
       </form>
     </div>
   );

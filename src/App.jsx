@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Header from "./components/Header";
 import ListadoGastos from "./components/ListadoGastos";
 import NuevoGastoModal from "./components/NuevoGastoModal";
@@ -12,20 +12,45 @@ function App() {
   const [newExpenseModal, setNewExpenseModal] = useState(false);
   const [animateModal, setAnimateModal] = useState(false);
   const [gastos, setGastos] = useState([]);
+  const [gastoEditar, setGastoEditar] = useState({});
+
+  useEffect(() => {
+    if (Object.keys(gastoEditar).length > 0) {
+      setNewExpenseModal(true);
+      setTimeout(() => {
+        setAnimateModal(true);
+      }, 250);
+    }
+  }, [gastoEditar]);
 
   const handleNewExpense = () => {
     setNewExpenseModal(true);
-
+    setGastoEditar({});
     setTimeout(() => {
       setAnimateModal(true);
     }, 250);
   };
 
   const guardarGasto = (gasto) => {
-    console.log(generarID());
-    gasto.id = generarID();
-    gasto.fecha = Date.now();
-    setGastos([...gastos, gasto]);
+    if (gasto.id) {
+      const gastosActualizados = gastos.map((gastoState) =>
+        gasto.id === gastoState.id ? gasto : gastoState
+      );
+      setGastos(gastosActualizados);
+    } else {
+      gasto.id = generarID();
+      gasto.fecha = Date.now();
+      setGastos([...gastos, gasto]);
+    }
+
+    setAnimateModal(false);
+    setTimeout(() => {
+      setNewExpenseModal(false);
+    }, 500);
+  };
+
+  const eliminarGasto = (id) => {
+    setGastos(gastos.filter((gastoState) => gastoState.id !== id));
   };
 
   return (
@@ -35,11 +60,16 @@ function App() {
         setBudget={setBudget}
         isValid={isValid}
         setIsValid={setIsValid}
+        gastos={gastos}
       />
       {isValid && (
         <>
           <main>
-            <ListadoGastos gastos={gastos} />
+            <ListadoGastos
+              gastos={gastos}
+              setGastoEditar={setGastoEditar}
+              eliminarGasto={eliminarGasto}
+            />
           </main>
           <div className="nuevo-gasto">
             <img
@@ -57,6 +87,8 @@ function App() {
           animateModal={animateModal}
           setAnimateModal={setAnimateModal}
           guardarGasto={guardarGasto}
+          gastoEditar={gastoEditar}
+          setGastoEditar={setGastoEditar}
         />
       )}
     </>
