@@ -30,7 +30,7 @@ const NuevoPresupuesto = ({ budget, setBudget, setIsValid}) => {
           <label className="">Determine Budget</label>
           <input
             className="nuevo-presupuesto"
-            type="text"
+            type="number"
             placeholder="Add your Budget"
             onChange={handleBudget}
           />
